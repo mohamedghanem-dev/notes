@@ -472,7 +472,7 @@ fun NoteCardItem(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(14.dp)
+                .padding(12.dp)
         ) {
             // Header Row (Badges & Icons)
             Row(
@@ -647,7 +647,7 @@ fun NoteCardItem(
                         text = note.content,
                         style = MaterialTheme.typography.bodySmall,
                         color = contentColor.copy(alpha = 0.85f),
-                        maxLines = 4,
+                        maxLines = 3,
                         overflow = TextOverflow.Ellipsis
                     )
                 }

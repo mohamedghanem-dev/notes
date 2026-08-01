@@ -6,6 +6,7 @@ import androidx.datastore.preferences.core.*
 import androidx.datastore.preferences.preferencesDataStore
 import com.example.util.SecurityUtils
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
 private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "notes_user_settings")
@@ -74,13 +75,10 @@ class UserPreferencesManager(private val context: Context) {
     }
 
     suspend fun verifyPassword(inputPassword: String): Boolean {
-        var isCorrect = false
-        context.dataStore.data.collect { preferences ->
-            val hash = preferences[KEY_PASSWORD_HASH] ?: ""
-            val salt = preferences[KEY_PASSWORD_SALT] ?: ""
-            isCorrect = SecurityUtils.verifyPassword(inputPassword, salt, hash)
-        }
-        return isCorrect
+        val preferences = context.dataStore.data.first()
+        val hash = preferences[KEY_PASSWORD_HASH] ?: ""
+        val salt = preferences[KEY_PASSWORD_SALT] ?: ""
+        return SecurityUtils.verifyPassword(inputPassword, salt, hash)
     }
 
     suspend fun setAppTheme(theme: String) {

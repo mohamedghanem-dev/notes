@@ -34,7 +34,7 @@ class MainActivity : ComponentActivity() {
             val viewModel: NotesViewModel = viewModel()
             val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-            NotesAppTheme(appThemeSetting = uiState.appTheme) {
+            NotesAppTheme(appThemeSetting = uiState.appTheme, dynamicColor = false) {
                 ProvideAppLanguage(languageCode = uiState.language) {
                     val navController = rememberNavController()
                     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)

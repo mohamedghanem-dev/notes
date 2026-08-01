@@ -1,6 +1,8 @@
 package com.example.ui.screens
 
 import android.content.Intent
+import android.widget.Toast
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -68,6 +70,33 @@ fun NoteEditorScreen(
         undoStack.add(Pair(title, content))
         content = newContent
         redoStack.clear()
+    }
+
+    // Builds the note from current editor state and saves it if there's anything to save.
+    // Used by: the back arrow, the system/gesture back action, and the small save button —
+    // so a note is never lost no matter how the user leaves the screen.
+    fun performSave(showToast: Boolean = false) {
+        val currentNote = (note ?: NoteEntity()).copy(
+            title = title,
+            content = content,
+            folderId = folderId,
+            isPinned = isPinned,
+            isFavorite = isFavorite,
+            isLocked = isLocked,
+            colorHex = colorHex,
+            tags = tags
+        )
+        if (title.isNotBlank() || content.isNotBlank()) {
+            onSaveClick(currentNote)
+            if (showToast) Toast.makeText(context, strings.save, Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    // Catches the system back button AND the edge swipe-back gesture — without this,
+    // swiping out of the note quickly used to discard unsaved changes silently.
+    BackHandler {
+        performSave()
+        onBackClick()
     }
 
     val selectedFolder = folders.find { it.id == folderId }
@@ -150,20 +179,7 @@ fun NoteEditorScreen(
                 navigationIcon = {
                     IconButton(
                         onClick = {
-                            // Auto save before back
-                            val currentNote = (note ?: NoteEntity()).copy(
-                                title = title,
-                                content = content,
-                                folderId = folderId,
-                                isPinned = isPinned,
-                                isFavorite = isFavorite,
-                                isLocked = isLocked,
-                                colorHex = colorHex,
-                                tags = tags
-                            )
-                            if (title.isNotBlank() || content.isNotBlank()) {
-                                onSaveClick(currentNote)
-                            }
+                            performSave()
                             onBackClick()
                         },
                         modifier = Modifier.testTag("editor_back_button")
@@ -176,6 +192,18 @@ fun NoteEditorScreen(
                     }
                 },
                 actions = {
+                    // Small explicit save button — saves in place without leaving the note.
+                    IconButton(
+                        onClick = { performSave(showToast = true) },
+                        modifier = Modifier.testTag("editor_save_button")
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Check,
+                            contentDescription = strings.save,
+                            tint = contentColor
+                        )
+                    }
+
                     IconButton(onClick = { isPinned = !isPinned }) {
                         Icon(
                             imageVector = Icons.Default.PushPin,
