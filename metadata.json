@@ -1,0 +1,6 @@
+{
+  "name": "Notes",
+  "description": "A sleek, secure, offline-first notes application with encrypted database security, multilingual support (English & Arabic), rich editor, folders, tags, and smooth UI.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

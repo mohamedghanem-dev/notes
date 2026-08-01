@@ -1,0 +1,96 @@
+name: Build Android APK
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. جلب كود المشروع
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      # 2. إعداد جافا 17 (مطلوبة لـ AGP الحديث و Jetpack Compose)
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      # 3. هذا المشروع (مُصدَّر من AI Studio) ما فيهوش ملف gradlew أصلاً،
+      #    فبنستخدم setup-gradle عشان يحمّل Gradle نفسه ويحطه في PATH
+      #    بدل الاعتماد على ./gradlew اللي مش موجود.
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v6
+        with:
+          gradle-version: current
+
+      # 4. توليد debug.keystore افتراضي — الكود بيدور عليه في ${rootDir}/debug.keystore
+      #    ولو مش موجود الـ build هيفشل. القيم دي (android/androiddebugkey) هي
+      #    نفس قيم الـ debug keystore القياسية.
+      - name: Generate debug keystore
+        run: |
+          keytool -genkeypair -v \
+            -keystore debug.keystore \
+            -storepass android \
+            -alias androiddebugkey \
+            -keypass android \
+            -keyalg RSA -keysize 2048 -validity 10000 \
+            -dname "CN=Android Debug,O=Android,C=US"
+
+      # 5. بناء نسخة Debug من الـ APK
+      - name: Build Debug APK
+        run: gradle assembleDebug --no-daemon
+
+      # 6. رفع الـ APK كـ artifact تقدر تنزله من صفحة الـ run على الموبايل
+      - name: Upload APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-debug-apk
+          path: app/build/outputs/apk/debug/app-debug.apk
+
+  build-release:
+    # يشتغل بس لما تعمل push لتاج زي v1.0.0، أو تشغّله يدوي
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v6
+        with:
+          gradle-version: current
+
+      # لازم تضيف الأسرار دي في: Settings > Secrets and variables > Actions
+      # RELEASE_KEYSTORE_BASE64  -> base64 لملف الـ .jks بتاعك (base64 -w0 my-upload-key.jks)
+      # RELEASE_STORE_PASSWORD   -> باسورد الـ keystore
+      # RELEASE_KEY_PASSWORD     -> باسورد الـ key نفسه
+      - name: Decode signing keystore
+        env:
+          KEYSTORE_BASE64: ${{ secrets.RELEASE_KEYSTORE_BASE64 }}
+        run: echo "$KEYSTORE_BASE64" | base64 -d > my-upload-key.jks
+
+      - name: Build Release APK
+        env:
+          KEYSTORE_PATH: ${{ github.workspace }}/my-upload-key.jks
+          STORE_PASSWORD: ${{ secrets.RELEASE_STORE_PASSWORD }}
+          KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
+        run: gradle assembleRelease --no-daemon
+
+      - name: Upload Release APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-release-apk
+          path: app/build/outputs/apk/release/app-release.apk
