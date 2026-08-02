@@ -28,7 +28,6 @@ import androidx.compose.ui.unit.sp
 import com.example.data.model.FolderEntity
 import com.example.data.model.NoteEntity
 import com.example.ui.components.ColorPickerModal
-import com.example.ui.components.DrawingCanvasModal
 import com.example.ui.components.parseColor
 import com.example.util.LocalAppStrings
 
@@ -56,7 +55,6 @@ fun NoteEditorScreen(
     var tags by remember(note) { mutableStateOf(note?.tags ?: "") }
 
     var showColorPicker by remember { mutableStateOf(false) }
-    var showDrawingCanvas by remember { mutableStateOf(false) }
     var showTagDialog by remember { mutableStateOf(false) }
     var showFolderMenu by remember { mutableStateOf(false) }
     var newTagInput by remember { mutableStateOf("") }
@@ -288,19 +286,8 @@ fun NoteEditorScreen(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    // Left group: Drawing, Palette, Tag
+                    // Left group: Palette, Tag
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        IconButton(
-                            onClick = { showDrawingCanvas = true },
-                            modifier = Modifier.testTag("drawing_canvas_button")
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Brush,
-                                contentDescription = strings.drawingPad,
-                                tint = MaterialTheme.colorScheme.primary
-                            )
-                        }
-
                         IconButton(
                             onClick = { showColorPicker = true },
                             modifier = Modifier.testTag("color_picker_button")
@@ -450,7 +437,10 @@ fun NoteEditorScreen(
                     focusedContainerColor = Color.Transparent,
                     unfocusedContainerColor = Color.Transparent,
                     focusedIndicatorColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.Transparent
+                    unfocusedIndicatorColor = Color.Transparent,
+                    focusedTextColor = contentColor,
+                    unfocusedTextColor = contentColor,
+                    cursorColor = contentColor
                 ),
                 singleLine = true,
                 modifier = Modifier
@@ -480,7 +470,10 @@ fun NoteEditorScreen(
                     focusedContainerColor = Color.Transparent,
                     unfocusedContainerColor = Color.Transparent,
                     focusedIndicatorColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.Transparent
+                    unfocusedIndicatorColor = Color.Transparent,
+                    focusedTextColor = contentColor,
+                    unfocusedTextColor = contentColor,
+                    cursorColor = contentColor
                 ),
                 modifier = Modifier
                     .fillMaxWidth()
@@ -496,15 +489,6 @@ fun NoteEditorScreen(
             selectedHex = colorHex,
             onColorSelect = { hex -> colorHex = hex },
             onDismiss = { showColorPicker = false }
-        )
-    }
-
-    if (showDrawingCanvas) {
-        DrawingCanvasModal(
-            onDismiss = { showDrawingCanvas = false },
-            onSaveDrawing = { sketchStr ->
-                updateContent(content + "\n\n$sketchStr\n")
-            }
         )
     }
 

@@ -131,7 +131,7 @@ val EnglishStrings = AppStrings(
     storageAndData = "Storage & Stats",
     totalNotes = "Total Active Notes",
     appInfo = "About Notes",
-    version = "Version 1.0 (SQLite Encrypted)",
+    version = "Version 1.0",
     securityHelpNote = "Passwords are encrypted and stored locally in SQLite database for maximum privacy."
 )
 
@@ -193,7 +193,7 @@ val ArabicStrings = AppStrings(
     storageAndData = "التخزين والإحصائيات",
     totalNotes = "إجمالي الملاحظات النشطة",
     appInfo = "حول التطبيق",
-    version = "الإصدار 1.0 (تخزين محلي مشفر)",
+    version = "الإصدار 1.0",
     securityHelpNote = "كلمات السر محفوظة ومشفرة محلياً في قاعدة البيانات لتأمين خصوصيتك بالكامل."
 )
 

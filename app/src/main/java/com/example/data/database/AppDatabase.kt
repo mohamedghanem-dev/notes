@@ -57,10 +57,9 @@ abstract class AppDatabase : RoomDatabase() {
                     title = "Welcome to Notes! 📝",
                     content = "Thank you for using Notes. Here are some key features:\n\n" +
                             "• Offline SQLite storage powered by Room\n" +
-                            "• Encrypted password & privacy lock protection\n" +
+                            "• Password-protected privacy lock\n" +
                             "• Bilingual English and Arabic RTL interface\n" +
-                            "• Folder, Tags, Starred, and Archive organization\n" +
-                            "• Custom touch drawing pad and formatting bar\n\n" +
+                            "• Folder, Tags, Starred, and Archive organization\n\n" +
                             "Enjoy taking notes securely!",
                     folderId = personalId,
                     isPinned = true,

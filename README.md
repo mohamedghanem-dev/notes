@@ -1,22 +1,34 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://ai.google.dev/static/site-assets/images/share-ais-513315318.png" />
-</div>
+# Notes
 
-# Run and deploy your AI Studio app
+A private, offline notes app for Android — built with Kotlin and Jetpack Compose.
 
-This contains everything you need to run your app locally.
+## Features
 
-View your app in AI Studio: https://ai.studio/apps/41bf9149-d8d4-48f9-b9e9-6d6edf349b3c
+- Rich note list with search, pin, favorite, folders, tags, and trash
+- Per-note background colors
+- Optional app-wide password lock
+- Grid or list view
+- Arabic / English UI
+- Share a note as plain text
+- Fully offline — notes are stored locally in a Room/SQLite database
 
-## Run Locally
+## Build
 
-**Prerequisites:**  [Android Studio](https://developer.android.com/studio)
+This project has no local Gradle wrapper — builds run through GitHub Actions.
 
+1. Push to `main` (or run the workflow manually from the **Actions** tab).
+2. The **Build Android APK** workflow builds a debug APK automatically.
+3. Download it from the workflow run's **Artifacts** section.
 
-1. Open Android Studio
-2. Select **Open** and choose the directory containing this project
-3. Allow Android Studio to fix any incompatibilities as it imports the project.
-4. Create a file named `.env` in the project directory and set `GEMINI_API_KEY` in that file to your Gemini API key (see `.env.example` for an example)
-5. Remove this line from the app's `build.gradle.kts` file: `signingConfig = signingConfigs.getByName("debugConfig")`
-6. Run the app on an emulator or physical device
-7. If you have already published your app in AI Studio, please [request upload key reset](https://support.google.com/googleplay/android-developer/answer/9842756#zippy=%2Crequest-an-upload-key-reset) in Google Play Console.
+For a signed release build, add these repository secrets first, then run the
+workflow manually (`workflow_dispatch`):
+
+- `RELEASE_KEYSTORE_BASE64` — your `.jks` keystore, base64-encoded
+- `RELEASE_STORE_PASSWORD`
+- `RELEASE_KEY_PASSWORD`
+
+## Run locally (optional)
+
+Requires [Android Studio](https://developer.android.com/studio). Open the
+project folder directly — Android Studio will generate its own local Gradle
+wrapper automatically on first sync.

@@ -41,6 +41,7 @@ class MainActivity : ComponentActivity() {
                     val coroutineScope = rememberCoroutineScope()
 
                     var noteToUnlock by remember { mutableStateOf<NoteEntity?>(null) }
+                    var showCreateFolderDialog by remember { mutableStateOf(false) }
 
                     // Global App Lock verification on launch if enabled
                     if (uiState.isAppLockEnabled && uiState.hasPasswordSet && !uiState.isAppUnlocked) {
@@ -63,7 +64,8 @@ class MainActivity : ComponentActivity() {
                                         viewModel.setFilter(filter, folderId)
                                     },
                                     onCreateFolderClick = {
-                                        // Navigates or opens folder dialog inside NotesListScreen
+                                        showCreateFolderDialog = true
+                                        coroutineScope.launch { drawerState.close() }
                                     },
                                     onSettingsClick = {
                                         navController.navigate("settings")
@@ -102,6 +104,8 @@ class MainActivity : ComponentActivity() {
                                         onCreateFolder = { name, color ->
                                             viewModel.createFolder(name, color)
                                         },
+                                        showCreateFolderDialog = showCreateFolderDialog,
+                                        onCreateFolderDialogChange = { showCreateFolderDialog = it },
                                         onSettingsClick = {
                                             navController.navigate("settings")
                                         },

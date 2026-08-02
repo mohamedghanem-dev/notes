@@ -56,11 +56,12 @@ fun NotesListScreen(
     onClearTrash: () -> Unit,
     onToggleGridView: () -> Unit,
     onSearchQueryChange: (String) -> Unit,
+    showCreateFolderDialog: Boolean = false,
+    onCreateFolderDialogChange: (Boolean) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val strings = LocalAppStrings.current
     var isSearchActive by remember { mutableStateOf(false) }
-    var showCreateFolderDialog by remember { mutableStateOf(false) }
     var newFolderName by remember { mutableStateOf("") }
 
     val pageTitle = when (uiState.filter) {
@@ -309,7 +310,7 @@ fun NotesListScreen(
     // Create Folder Dialog
     if (showCreateFolderDialog) {
         AlertDialog(
-            onDismissRequest = { showCreateFolderDialog = false },
+            onDismissRequest = { onCreateFolderDialogChange(false) },
             title = { Text(strings.createFolder) },
             text = {
                 OutlinedTextField(
@@ -328,7 +329,7 @@ fun NotesListScreen(
                         if (newFolderName.isNotBlank()) {
                             onCreateFolder(newFolderName, "#4F46E5")
                             newFolderName = ""
-                            showCreateFolderDialog = false
+                            onCreateFolderDialogChange(false)
                         }
                     },
                     modifier = Modifier.testTag("confirm_create_folder")
@@ -338,7 +339,7 @@ fun NotesListScreen(
             },
             dismissButton = {
                 TextButton(
-                    onClick = { showCreateFolderDialog = false },
+                    onClick = { onCreateFolderDialogChange(false) },
                     modifier = Modifier.testTag("cancel_create_folder")
                 ) {
                     Text(strings.cancel)
